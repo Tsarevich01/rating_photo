@@ -125,8 +125,20 @@ output/*/index.html
 *.sqlite
 *.rdb
 
+*.service
+!*.example
+
+# Cookiecutter
+output/
+
 *.mp4
 *.avi
 
-# GitLab CI/CD
-builds/
+Dockerfile
+docker-compose.y*ml
+
+.git/
+.gitignore
+.isort.cfg
+.prospector.y*ml
+README.md

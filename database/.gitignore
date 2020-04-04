@@ -125,8 +125,11 @@ output/*/index.html
 *.sqlite
 *.rdb
 
+*.service
+!*.example
+
+# Cookiecutter
+output/
+
 *.mp4
 *.avi
-
-# GitLab CI/CD
-builds/
