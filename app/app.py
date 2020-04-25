@@ -16,7 +16,6 @@ def register_extensions(app: Sanic):
     extensions.register_db(app)
     extensions.register_cors(app)
     extensions.register_async_helpers(app)
-    extensions.register_ddtrace(app)
 
 
 def register_blueprints(app: Sanic):

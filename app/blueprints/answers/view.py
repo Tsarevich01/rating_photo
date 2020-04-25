@@ -25,7 +25,7 @@ async def get_photos(request: Request):
 async def get_count(request: Request):  # pylint: disable=unused-argument
     count, *_ = await db \
         .select([func.count(Photo.id)]) \
-        .first()
+        .gino.first()
     return json({'photo_count': count})
 
 
@@ -39,7 +39,7 @@ async def add_rating_photo(request: Request):
         photo_id=photo_id,
         rating=float(rating)
     )
-    return json({{'status': 'ok'}})
+    return json({'status': 'ok'})
 
 
 def limit_query(query, limit: Optional[str] = None, offset: Optional[str] = None):

@@ -11,7 +11,6 @@ ddtrace = "^0.30"
 gino = "^0.8"
 alembic = "^1.2"
 psycopg2-binary = "^2.8"
-msgpack-numpy = {git = "https://github.com/SandLabs/msgpack-numpy.git",branch = "master"}
 
 [tool.poetry.dev-dependencies]
 prospector = "^1.1"
