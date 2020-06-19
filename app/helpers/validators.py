@@ -6,6 +6,12 @@ from uuid import UUID
 from sanic.exceptions import InvalidUsage
 
 
+def raise_if_not_limit(*args, error: str = 'Not limit.'):
+    for arg in args:
+        if arg is None:
+            raise InvalidUsage(error)
+
+
 def raise_if_empty(*args, error: str = 'Missing data.'):
     for arg in args:
         if arg is None:
