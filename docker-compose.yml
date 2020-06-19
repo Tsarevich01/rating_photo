@@ -5,8 +5,6 @@ services:
         build: .
         image: gdeon/sanic:develop
         restart: unless-stopped
-        ports:
-            - 8000:8000
         environment:
             SERVER_IP: 0.0.0.0
             SERVER_PORT: 8000
