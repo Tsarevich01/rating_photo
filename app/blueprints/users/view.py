@@ -4,10 +4,11 @@ from sanic.response import json
 from sanic_jwt.decorators import inject_user, protected
 from sanic_openapi import doc  # pylint: disable=wrong-import-order
 
+from sqlalchemy.sql import func
 from app.helpers import loaders, validators
 from app.helpers.swagger import models as swagger_models
 from app.helpers.swagger.docs import json_consumes
-from database import User, Assessment
+from database import User, Assessment, db
 
 
 blueprint = Blueprint('users', url_prefix='/users', strict_slashes=True)
@@ -26,12 +27,33 @@ async def get_user(request: Request, user: User):  # pylint: disable=unused-argu
 @doc.summary('Получение количества оцененных фоток')
 @doc.security(True)
 @doc.response(200, doc.Dictionary({'count': doc.Integer()}))
+@doc.response(200, doc.Dictionary({'count': doc.Dictionary({'user_id': doc.String(), 'count': doc.Integer()})}))
 @blueprint.get('/count_photos')
 @protected()
 @inject_user()
 async def get_count_photo(request: Request, user: User):  # pylint: disable=unused-argument
-    count = await Assessment.query.where(Assessment.user_id == user.id).gino.all()
-    return json({'count': len(count)})
+    if user.login == 'admin':
+        count = await db.select((User, func.count(Assessment)))\
+            .select_from(User.outherjoin(Assessment))\
+            .load(User.load(func.count(Assessment))).gino.all()
+        count = [x.to_dict() for x in count]
+    else:
+        count = await Assessment.query.where(Assessment.user_id == user.id).gino.all()
+        count = len(count)
+    return json({'count': count})
+
+
+@doc.summary('Получение пользоватей')
+@doc.security(True)
+@doc.response(200, swagger_models.User)
+@blueprint.get('/users')
+@protected()
+@inject_user()
+async def get_count_photo(request: Request, user: User):  # pylint: disable=unused-argument
+    if user.login == 'admin':
+        users = await User.query.where(User.login != 'admin').gino.all()
+        users = [x.to_dict() for x in users]
+        return json(users)
 
 
 @doc.summary('Обновление пользователя')

@@ -4,7 +4,7 @@ from sanic import Blueprint
 from sanic.request import Request
 from sanic.response import json
 from database import Photo, db, Assessment, User
-from sqlalchemy.sql import func, or_
+from sqlalchemy.sql import func, and_
 from app.helpers.swagger import models as swagger_models
 from sanic_openapi import doc  # pylint: disable=wrong-import-order
 from sanic_jwt.decorators import inject_user, protected
@@ -26,9 +26,15 @@ async def get_photos(request: Request, user: User):
     offset = request.args.get('offset', default=0)
     raise_if_empty(limit, offset)
     raise_if_not_int(limit, offset)
-    query = db.select([Photo]).select_from(Photo.outerjoin(Assessment)).where(or_(Assessment.user_id != user.id,
-                                                                                  Assessment.id == None))
-    photos = limit_query(query, limit, offset)
+
+    if user.login == 'admin':
+        query = db.select((Photo, Assessment)).select_from(Photo.otherjoin(Assessment))
+        photos = limit_query(query, limit, offset).load(Photo.load(Assessment))
+    else:
+        query = db.select([Photo]).select_from(Photo.outerjoin(Assessment)).where(and_(Assessment.user_id != user.id,
+                                                                                      Assessment.id == None))
+        photos = limit_query(query, limit, offset)
+
     photos = await photos.gino.all()
     return json([photo.to_dict() for photo in photos])
 
