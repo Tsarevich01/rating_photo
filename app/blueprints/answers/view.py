@@ -35,7 +35,7 @@ async def get_photos(request: Request, user: User):
                                                                                       Assessment.id == None))
         photos = limit_query(query, limit, offset)
 
-    photos = await photos.gino.all()
+    photos = await photos.all()
     return json([photo.to_dict() for photo in photos])
 
 
@@ -79,4 +79,4 @@ def limit_query(query, limit: Optional[str] = None, offset: Optional[str] = None
     if offset:
         raise_if_not_int(offset)
         query = query.offset(int(offset))
-    return query
+    return query.gino
