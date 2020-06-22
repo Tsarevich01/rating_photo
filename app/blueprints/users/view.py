@@ -35,7 +35,7 @@ async def get_count_photo(request: Request, user: User):  # pylint: disable=unus
     if user.login == 'admin':
         count = await db.select((User, func.count(Assessment)))\
             .select_from(User.outerjoin(Assessment))\
-            .gino.load(User.load(func.count(Assessment))).all()
+            .gino.load(User.load(Assessment)).all()
         count = [x.to_dict() for x in count]
     else:
         count = await Assessment.query.where(Assessment.user_id == user.id).gino.all()
