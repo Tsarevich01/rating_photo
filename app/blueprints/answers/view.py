@@ -28,7 +28,7 @@ async def get_photos(request: Request, user: User):
     raise_if_not_int(limit, offset)
 
     if user.login == 'admin':
-        query = db.select((Photo, Assessment)).select_from(Photo.otherjoin(Assessment))
+        query = db.select((Photo, Assessment)).select_from(Photo.outerjoin(Assessment))
         photos = limit_query(query, limit, offset).load(Photo.load(Assessment))
     else:
         query = db.select([Photo]).select_from(Photo.outerjoin(Assessment)).where(and_(Assessment.user_id != user.id,
